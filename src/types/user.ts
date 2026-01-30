@@ -24,6 +24,26 @@ export interface ProgressEntry {
   notes: string;
   rating: number; // 1-5
   improvements: string[];
+  caloriesConsumed?: number;
+  waterIntake?: number; // in ml
+}
+
+export interface DailyCalorieLog {
+  id: string;
+  date: string;
+  time: string;
+  caloriesConsumed: number;
+  waterIntake: number;
+  targetCalories: number;
+  targetWater: number;
+}
+
+export interface Reminder {
+  id: string;
+  title: string;
+  time: string;
+  category: 'skincare' | 'haircare' | 'workout' | 'diet' | 'hydration';
+  isActive: boolean;
 }
 
 export interface Recommendation {

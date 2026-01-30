@@ -60,7 +60,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onComplete }) => {
             <Sparkles className="w-10 h-10 text-primary-foreground" />
           </div>
           <h1 className="text-4xl font-display font-bold text-foreground mb-2">
-            Wellvora
+            WellVora
           </h1>
           <p className="text-muted-foreground">
             Your personalized whole-body care journey begins here
