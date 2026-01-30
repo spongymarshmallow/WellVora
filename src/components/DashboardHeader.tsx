@@ -21,7 +21,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onNavigate, currentPa
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center shadow-glow">
             <Sparkles className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="text-xl font-display font-bold">Wellvora</span>
+          <span className="text-xl font-display font-bold">WellVora</span>
         </div>
 
         {/* Navigation */}
