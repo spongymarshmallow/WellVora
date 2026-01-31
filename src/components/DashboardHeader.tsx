@@ -1,12 +1,14 @@
 import React from 'react';
-import { LogOut, User, Settings, TrendingUp, Sparkles } from 'lucide-react';
+import { LogOut, User, Settings, TrendingUp, Sparkles, Brain, Scan } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@/context/UserContext';
 import { calculateDailyNeeds } from '@/utils/recommendations';
 
+export type PageType = 'dashboard' | 'tracking' | 'profile' | 'mental-health' | 'ai-screening';
+
 interface DashboardHeaderProps {
-  onNavigate: (page: 'dashboard' | 'tracking' | 'profile') => void;
-  currentPage: 'dashboard' | 'tracking' | 'profile';
+  onNavigate: (page: PageType) => void;
+  currentPage: PageType;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onNavigate, currentPage }) => {
@@ -25,10 +27,10 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onNavigate, currentPa
         </div>
 
         {/* Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-1">
           <button
             onClick={() => onNavigate('dashboard')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               currentPage === 'dashboard'
                 ? 'bg-primary/10 text-primary'
                 : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
@@ -37,26 +39,48 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onNavigate, currentPa
             Dashboard
           </button>
           <button
+            onClick={() => onNavigate('mental-health')}
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              currentPage === 'mental-health'
+                ? 'bg-[hsl(var(--diet))]/10 text-[hsl(var(--diet))]'
+                : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+            }`}
+          >
+            <Brain className="w-4 h-4" />
+            Wellness
+          </button>
+          <button
+            onClick={() => onNavigate('ai-screening')}
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
+              currentPage === 'ai-screening'
+                ? 'bg-[hsl(var(--skincare))]/10 text-[hsl(var(--skincare))]'
+                : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+            }`}
+          >
+            <Scan className="w-4 h-4" />
+            AI Screening
+          </button>
+          <button
             onClick={() => onNavigate('tracking')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
               currentPage === 'tracking'
                 ? 'bg-primary/10 text-primary'
                 : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
             }`}
           >
             <TrendingUp className="w-4 h-4" />
-            Progress Tracker
+            Tracker
           </button>
           <button
             onClick={() => onNavigate('profile')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+            className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 ${
               currentPage === 'profile'
                 ? 'bg-primary/10 text-primary'
                 : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
             }`}
           >
             <Settings className="w-4 h-4" />
-            Edit Profile
+            Profile
           </button>
         </nav>
 
@@ -89,20 +113,42 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onNavigate, currentPa
       </div>
 
       {/* Mobile Navigation */}
-      <nav className="md:hidden flex items-center justify-center gap-2 mt-4 pt-4 border-t border-border">
+      <nav className="lg:hidden flex items-center justify-center gap-1 mt-4 pt-4 border-t border-border flex-wrap">
         <button
           onClick={() => onNavigate('dashboard')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             currentPage === 'dashboard'
               ? 'bg-primary/10 text-primary'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          Dashboard
+          Home
+        </button>
+        <button
+          onClick={() => onNavigate('mental-health')}
+          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
+            currentPage === 'mental-health'
+              ? 'bg-[hsl(var(--diet))]/10 text-[hsl(var(--diet))]'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Brain className="w-3 h-3" />
+          Wellness
+        </button>
+        <button
+          onClick={() => onNavigate('ai-screening')}
+          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors flex items-center gap-1 ${
+            currentPage === 'ai-screening'
+              ? 'bg-[hsl(var(--skincare))]/10 text-[hsl(var(--skincare))]'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Scan className="w-3 h-3" />
+          AI Scan
         </button>
         <button
           onClick={() => onNavigate('tracking')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             currentPage === 'tracking'
               ? 'bg-primary/10 text-primary'
               : 'text-muted-foreground hover:text-foreground'
@@ -112,7 +158,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onNavigate, currentPa
         </button>
         <button
           onClick={() => onNavigate('profile')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors ${
             currentPage === 'profile'
               ? 'bg-primary/10 text-primary'
               : 'text-muted-foreground hover:text-foreground'
