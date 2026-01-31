@@ -278,63 +278,126 @@ export const generateWorkoutRecommendations = (profile: UserProfile): Recommenda
   const recommendations: Recommendation[] = [];
   const goals = profile.bodyGoals.toLowerCase();
   const bmi = profile.weight / Math.pow(profile.height / 100, 2);
+  
+  // Determine BMI category
+  const getBMICategory = () => {
+    if (bmi < 18.5) return 'underweight';
+    if (bmi < 25) return 'normal';
+    return 'overweight';
+  };
+  
+  const bmiCategory = getBMICategory();
 
-  // Weight loss
-  if (goals.includes('weight') || goals.includes('fat') || goals.includes('slim') || goals.includes('lean') || bmi > 25) {
+  // BMI-based primary recommendation - ALWAYS shown first
+  if (bmiCategory === 'underweight') {
     recommendations.push({
-      id: 'workout-1',
-      title: 'Fat Loss & Body Recomposition',
-      description: `Designed for your ${profile.activityLevel} activity level with focus on sustainable fat loss and muscle preservation.`,
-      whyItFits: `Your BMI of ${bmi.toFixed(1)} and goal of fat loss requires a combination of cardio and strength training. ${profile.gender === 'female' ? 'Women benefit greatly from strength training for metabolism.' : 'Men typically respond well to HIIT and progressive overload.'}`,
+      id: 'workout-bmi-gain',
+      title: '💪 Weight Gain & Muscle Building Program',
+      description: `Your BMI of ${bmi.toFixed(1)} indicates you're underweight. This program focuses on healthy weight gain through strength training and muscle building.`,
+      whyItFits: `Being underweight (BMI < 18.5) can affect energy, immunity, and overall health. Your ${profile.gender} physiology requires a focus on compound movements and progressive overload to build mass. At ${profile.height}cm and ${profile.weight}kg, gaining 5-10kg of muscle would bring you to a healthier range.`,
       ingredients: {
-        prefer: ['HIIT workouts', 'Strength training', 'Walking 10,000 steps', 'Compound movements', 'Progressive overload'],
-        avoid: ['Crash dieting', 'Only cardio approach', 'Skipping rest days', 'Overtraining'],
+        prefer: ['Heavy compound lifts', 'Progressive overload', 'Full body or PPL split', 'Adequate rest (48hrs per muscle)', '7-9 hours sleep'],
+        avoid: ['Excessive cardio', 'Undereating', 'Isolation-only workouts', 'Training to failure every session'],
+      },
+      naturalSolution: {
+        title: 'Home-Based Mass Building',
+        description: 'Focus on bodyweight progressions: Push-ups → Diamond → Archer. Pull-ups with added weight (backpack). Squats → Pistol progressions. Train 4-5 days/week. Add resistance bands for extra tension. Key: Progressive overload weekly - more reps or harder variation.',
+        timeline: '8-12 weeks for noticeable muscle gain, 6 months for significant transformation',
+        cost: '₹500-2000/month (pull-up bar, bands, weighted backpack)',
+      },
+      chemicalSolution: {
+        title: 'Gym Mass-Building Program',
+        description: 'PPL or Upper/Lower split 5-6 days. Focus: Squat 3x8, Deadlift 3x5, Bench 4x8, Rows 4x10, OHP 3x8. Progressive overload 2.5kg/week on compounds. Whey protein 40g post-workout. Creatine 5g daily. Mass gainer if struggling to eat enough.',
+        timeline: '4-8 weeks for strength, 10-16 weeks for visible mass',
+        cost: '₹3000-7000/month (gym + supplements)',
+      },
+      budgetNote: profile.budget.includes('500') ? 'Calisthenics and resistance bands can build impressive muscle for free. Focus on progressive overload.' : 'Gym membership with compound lifts + whey protein is the most efficient for weight gain.',
+      timeline: `Target: Gain 0.5-1kg per week. You need caloric surplus of 300-500 calories. Current weight: ${profile.weight}kg → Target: ${profile.weight + 8}kg`,
+      image: workoutImages[1],
+    });
+  } else if (bmiCategory === 'overweight') {
+    recommendations.push({
+      id: 'workout-bmi-loss',
+      title: '🔥 Fat Loss & Body Recomposition Program',
+      description: `Your BMI of ${bmi.toFixed(1)} indicates you're overweight. This program focuses on sustainable fat loss while preserving muscle mass.`,
+      whyItFits: `Your BMI above 25 suggests carrying excess body fat. At ${profile.height}cm and ${profile.weight}kg, losing 5-15kg would bring significant health benefits. ${profile.gender === 'female' ? 'Women benefit from strength training to boost metabolism.' : 'Men respond well to HIIT combined with strength training.'}`,
+      ingredients: {
+        prefer: ['HIIT 2-3x/week', 'Strength training 3-4x/week', 'Walking 10,000 steps daily', 'Compound movements', 'NEAT increase'],
+        avoid: ['Crash dieting', 'Only doing cardio', 'Overtraining', 'Skipping strength training'],
       },
       naturalSolution: {
         title: 'Home-Based Fat Loss',
-        description: 'Morning: 30-min brisk walk or yoga. Evening: Bodyweight circuit (squats, lunges, push-ups, planks) - 3 rounds. Weekend: Swimming or cycling. Rest 1-2 days per week. Focus on NEAT (daily movement).',
-        timeline: '4-8 weeks for visible changes, 12-16 weeks for significant transformation',
-        cost: '₹0-500/month (yoga mat, resistance bands)',
+        description: 'Morning: 30-min fasted walk. Evening: HIIT circuit (burpees, mountain climbers, jump squats, high knees) - 30 sec on/30 sec off x 8 rounds. 3 days strength: Push-ups, squats, lunges, planks. Rest 2 days. Aim 10,000 steps daily through NEAT.',
+        timeline: '4-8 weeks for visible fat loss, 12-16 weeks for major transformation',
+        cost: '₹0-500/month (yoga mat optional)',
       },
       chemicalSolution: {
-        title: 'Gym-Based Program',
-        description: 'PPL split (Push-Pull-Legs) 5-6 days. Include HIIT 2-3x/week. Track progressive overload. Consider fat burner supplements (consult doctor). Use fitness tracker for accountability.',
-        timeline: '3-6 weeks for initial results, 10-14 weeks for major changes',
-        cost: '₹1500-5000/month (gym membership + supplements)',
+        title: 'Gym Fat Loss Program',
+        description: 'PPL split 5 days + HIIT 2 days. Focus on compound lifts in 8-12 rep range. Include 20-min LISS cardio post-weights. Track all food intake. Consider: L-Carnitine, Green Tea Extract, Caffeine pre-workout. Stay in caloric deficit.',
+        timeline: '3-6 weeks for initial results, 12-20 weeks for significant transformation',
+        cost: '₹2000-5000/month (gym + supplements)',
       },
-      budgetNote: profile.budget.includes('500') ? 'YouTube workouts and walking are free and highly effective for fat loss.' : 'Gym membership with trainer guidance accelerates results safely.',
-      timeline: '0.5-1kg fat loss per week is healthy and sustainable',
+      budgetNote: profile.budget.includes('500') ? 'Walking, YouTube HIIT workouts, and bodyweight exercises are completely free and highly effective for fat loss.' : 'Gym membership with structured program accelerates results safely.',
+      timeline: `Target: Lose 0.5-1kg per week safely. Current: ${profile.weight}kg → Goal: ${Math.round(profile.weight - (bmi - 23) * Math.pow(profile.height / 100, 2))}kg for healthy BMI`,
       image: workoutImages[0],
+    });
+  } else {
+    recommendations.push({
+      id: 'workout-bmi-maintain',
+      title: '⚡ Fitness Maintenance & Enhancement Program',
+      description: `Your BMI of ${bmi.toFixed(1)} is in the healthy range! This program focuses on maintaining your weight while building strength and endurance.`,
+      whyItFits: `At ${profile.height}cm and ${profile.weight}kg, you're in the optimal BMI range (18.5-25). The focus should be on building fitness, strength, and maintaining this healthy weight. Your ${profile.activityLevel} activity level determines workout intensity.`,
+      ingredients: {
+        prefer: ['Balanced strength/cardio', 'Progressive overload', 'Flexibility work', 'Consistent routine', 'Sport/activity you enjoy'],
+        avoid: ['Extreme dieting', 'Overtraining', 'Neglecting any fitness component'],
+      },
+      naturalSolution: {
+        title: 'Balanced Home Fitness',
+        description: 'Mix of: 3 days strength (bodyweight or bands), 2 days cardio (running, cycling, swimming), 1-2 days yoga/flexibility. Focus on progressive improvement in all areas. Include sports or activities you enjoy.',
+        timeline: 'Continuous improvement, maintain fitness year-round',
+        cost: '₹0-1000/month (basic equipment)',
+      },
+      chemicalSolution: {
+        title: 'Optimized Gym Program',
+        description: 'Upper/Lower or Full Body 4x/week. Include 2 days cardio/HIIT. Track lifts for progression. Consider creatine for performance. Balance protein intake. Regular deload weeks.',
+        timeline: 'Strength gains in 4-8 weeks, endurance improvement in 6-10 weeks',
+        cost: '₹1500-4000/month (gym + supplements)',
+      },
+      budgetNote: 'At maintenance, focus on activities you enjoy - consistency matters more than expensive programs.',
+      timeline: `Maintain current weight of ${profile.weight}kg while improving strength and endurance metrics`,
+      image: workoutImages[2],
     });
   }
 
-  // Muscle building/Strength
+  // Additional goal-based recommendations
   if (goals.includes('muscle') || goals.includes('strength') || goals.includes('bulk') || goals.includes('tone') || goals.includes('fit')) {
-    recommendations.push({
-      id: 'workout-2',
-      title: 'Muscle Building & Strength',
-      description: `Build lean muscle mass suited for your ${profile.gender} physiology and ${profile.activityLevel} current fitness level.`,
-      whyItFits: `${profile.gender === 'male' ? 'Higher testosterone supports muscle growth - focus on compound lifts.' : 'Women build lean muscle that improves metabolism without bulking.'} Your height (${profile.height}cm) and weight (${profile.weight}kg) determine your protein needs.`,
-      ingredients: {
-        prefer: ['Progressive overload', 'Compound movements', 'Adequate protein (1.6-2.2g/kg)', 'Rest days', 'Sleep 7-9 hours'],
-        avoid: ['Ego lifting', 'Neglecting legs', 'Insufficient protein', 'Overtraining'],
-      },
-      naturalSolution: {
-        title: 'Calisthenics & Bodyweight',
-        description: 'Follow a structured program: Pull-ups, dips, push-up variations, pistol squats, muscle-ups progressions. Train 4-5 days. Add resistance bands for progressive overload. Focus on time under tension.',
-        timeline: '6-10 weeks for strength gains, 12-20 weeks for visible muscle',
-        cost: '₹500-1500/month (pull-up bar, bands, rings)',
-      },
-      chemicalSolution: {
-        title: 'Weight Training Program',
-        description: 'PPL or Upper-Lower split 4-6 days. Focus: Squat, Deadlift, Bench, OHP, Rows. Progressive overload weekly. Whey protein post-workout. Creatine 5g daily. Track all lifts.',
-        timeline: '4-8 weeks for strength, 8-16 weeks for visible muscle',
-        cost: '₹2500-6000/month (gym + supplements)',
-      },
-      budgetNote: profile.budget.includes('500') ? 'Calisthenics builds impressive physiques for free - see YouTube progressions.' : 'Gym with proper equipment accelerates muscle building significantly.',
-      timeline: `Expect 0.5-1kg muscle gain per month naturally. Protein needed: ${Math.round(profile.weight * 1.8)}g/day`,
-      image: workoutImages[1],
-    });
+    if (bmiCategory !== 'underweight') { // Don't duplicate for underweight
+      recommendations.push({
+        id: 'workout-2',
+        title: 'Muscle Building & Strength',
+        description: `Build lean muscle mass suited for your ${profile.gender} physiology and ${profile.activityLevel} current fitness level.`,
+        whyItFits: `${profile.gender === 'male' ? 'Higher testosterone supports muscle growth - focus on compound lifts.' : 'Women build lean muscle that improves metabolism without bulking.'} Your height (${profile.height}cm) and weight (${profile.weight}kg) determine your protein needs.`,
+        ingredients: {
+          prefer: ['Progressive overload', 'Compound movements', 'Adequate protein (1.6-2.2g/kg)', 'Rest days', 'Sleep 7-9 hours'],
+          avoid: ['Ego lifting', 'Neglecting legs', 'Insufficient protein', 'Overtraining'],
+        },
+        naturalSolution: {
+          title: 'Calisthenics & Bodyweight',
+          description: 'Follow a structured program: Pull-ups, dips, push-up variations, pistol squats, muscle-ups progressions. Train 4-5 days. Add resistance bands for progressive overload. Focus on time under tension.',
+          timeline: '6-10 weeks for strength gains, 12-20 weeks for visible muscle',
+          cost: '₹500-1500/month (pull-up bar, bands, rings)',
+        },
+        chemicalSolution: {
+          title: 'Weight Training Program',
+          description: 'PPL or Upper-Lower split 4-6 days. Focus: Squat, Deadlift, Bench, OHP, Rows. Progressive overload weekly. Whey protein post-workout. Creatine 5g daily. Track all lifts.',
+          timeline: '4-8 weeks for strength, 8-16 weeks for visible muscle',
+          cost: '₹2500-6000/month (gym + supplements)',
+        },
+        budgetNote: profile.budget.includes('500') ? 'Calisthenics builds impressive physiques for free - see YouTube progressions.' : 'Gym with proper equipment accelerates muscle building significantly.',
+        timeline: `Expect 0.5-1kg muscle gain per month naturally. Protein needed: ${Math.round(profile.weight * 1.8)}g/day`,
+        image: workoutImages[1],
+      });
+    }
   }
 
   // Flexibility/Posture/Energy
@@ -366,35 +429,6 @@ export const generateWorkoutRecommendations = (profile: UserProfile): Recommenda
     });
   }
 
-  // Default
-  if (recommendations.length === 0) {
-    recommendations.push({
-      id: 'workout-default',
-      title: 'Balanced Fitness Routine',
-      description: `A well-rounded program for your ${profile.activityLevel} activity level.`,
-      whyItFits: `General fitness improves all aspects of health. Your ${profile.gender} physiology and ${profile.ageRange} age will benefit from this balanced approach.`,
-      ingredients: {
-        prefer: ['3-4 workout days', 'Mix of cardio and strength', 'Daily walking', 'Adequate sleep'],
-        avoid: ['Overtraining', 'Skipping rest', 'Ignoring nutrition'],
-      },
-      naturalSolution: {
-        title: 'Home Fitness',
-        description: 'Alternate: Bodyweight strength days and cardio/walking days. Include weekly yoga session. Focus on consistency over intensity.',
-        timeline: 'Improved fitness in 4-6 weeks',
-        cost: '₹0-500/month',
-      },
-      chemicalSolution: {
-        title: 'Gym Routine',
-        description: 'Full body workouts 3x/week with cardio 2x/week. Track progress. Consider basic supplements (multivitamin, omega-3).',
-        timeline: 'Visible changes in 4-8 weeks',
-        cost: '₹1500-3000/month',
-      },
-      budgetNote: 'Consistency matters more than fancy equipment.',
-      timeline: 'Steady improvement over 8-12 weeks',
-      image: workoutImages[0],
-    });
-  }
-
   return recommendations;
 };
 
@@ -408,7 +442,7 @@ export const generateDietRecommendations = (profile: UserProfile): Recommendatio
   // Calculate BMR and calorie needs
   let bmr: number;
   if (profile.gender === 'female') {
-    bmr = 10 * profile.weight + 6.25 * profile.height - 5 * 30 - 161; // Assuming average age
+    bmr = 10 * profile.weight + 6.25 * profile.height - 5 * 30 - 161;
   } else {
     bmr = 10 * profile.weight + 6.25 * profile.height - 5 * 30 + 5;
   }
@@ -423,33 +457,117 @@ export const generateDietRecommendations = (profile: UserProfile): Recommendatio
   
   const multiplier = activityMultiplier[profile.activityLevel as keyof typeof activityMultiplier] || 1.55;
   const tdee = Math.round(bmr * multiplier);
-  const hydration = Math.round(profile.weight * 35); // ml per day
+  const hydration = Math.round(profile.weight * 35);
+  const bmi = profile.weight / Math.pow(profile.height / 100, 2);
+  
+  // Determine BMI category and adjust calorie targets
+  const getBMICategory = () => {
+    if (bmi < 18.5) return 'underweight';
+    if (bmi < 25) return 'normal';
+    return 'overweight';
+  };
+  
+  const bmiCategory = getBMICategory();
+  
+  // Calculate target calories based on BMI
+  let targetCalories: number;
+  let dietGoal: string;
+  let calorieNote: string;
+  
+  if (bmiCategory === 'underweight') {
+    targetCalories = tdee + 400; // Caloric surplus for weight gain
+    dietGoal = 'weight gain';
+    calorieNote = `To gain weight healthily, you need a surplus of 300-500 calories above maintenance (${tdee} kcal). Target: ${targetCalories} kcal/day.`;
+  } else if (bmiCategory === 'overweight') {
+    targetCalories = tdee - 500; // Caloric deficit for weight loss
+    dietGoal = 'weight loss';
+    calorieNote = `For safe fat loss, maintain a deficit of 400-600 calories below maintenance (${tdee} kcal). Target: ${targetCalories} kcal/day.`;
+  } else {
+    targetCalories = tdee; // Maintenance
+    dietGoal = 'maintenance';
+    calorieNote = `To maintain your healthy weight, consume approximately ${tdee} kcal/day.`;
+  }
 
-  recommendations.push({
-    id: 'diet-1',
-    title: 'Personalized Nutrition Plan',
-    description: `Tailored nutrition for your ${profile.gender} body, ${profile.weight}kg weight, and ${profile.activityLevel} activity level.`,
-    whyItFits: `Based on your metrics, you need approximately ${tdee} calories daily for maintenance. For ${goals.includes('weight') || goals.includes('fat') ? 'fat loss, aim for ' + (tdee - 400) + '-' + (tdee - 500) + ' calories' : goals.includes('muscle') || goals.includes('bulk') ? 'muscle gain, aim for ' + (tdee + 200) + '-' + (tdee + 400) + ' calories' : 'maintenance, stick to ' + tdee + ' calories'}.`,
-    ingredients: {
-      prefer: ['Whole grains', 'Lean proteins', 'Vegetables', 'Healthy fats', 'Fruits', 'Legumes'],
-      avoid: allergies ? allergies.split(',').map(a => a.trim()) : ['Processed foods', 'Excess sugar', 'Trans fats'],
-    },
-    naturalSolution: {
-      title: 'Traditional Indian Diet',
-      description: `Start day with warm water + lemon. Breakfast: Poha/Upma/Idli with sambar. Lunch: Roti + sabzi + dal + salad + curd. Snacks: Fruits, nuts, makhana. Dinner: Light - khichdi or soup with roti. Minimum ${hydration}ml water daily.`,
-      timeline: 'Energy improvements in 1-2 weeks, body composition changes in 6-8 weeks',
-      cost: '₹3000-6000/month groceries',
-    },
-    chemicalSolution: {
-      title: 'Optimized Macro Nutrition',
-      description: `Protein: ${Math.round(profile.weight * 1.8)}g (eggs, chicken, whey). Carbs: ${Math.round((tdee * 0.4) / 4)}g (oats, rice, sweet potato). Fats: ${Math.round((tdee * 0.25) / 9)}g (nuts, olive oil, ghee). Track with MyFitnessPal. Consider: Omega-3, Vitamin D, Multivitamin.`,
-      timeline: 'Rapid changes when combined with exercise, 4-8 weeks for visible results',
-      cost: '₹5000-12000/month (quality food + supplements)',
-    },
-    budgetNote: profile.budget.includes('500') ? 'Dal, eggs, seasonal vegetables, and milk provide complete nutrition affordably.' : 'Invest in quality protein sources and fresh produce for optimal results.',
-    timeline: `Daily needs: ${tdee} kcal (maintenance) | ${hydration}ml water | ${Math.round(profile.weight * 1.6)}g protein minimum`,
-    image: dietImages[0],
-  });
+  // BMI-based primary diet recommendation - ALWAYS shown first
+  if (bmiCategory === 'underweight') {
+    recommendations.push({
+      id: 'diet-bmi-gain',
+      title: '🍽️ Weight Gain Nutrition Plan',
+      description: `Your BMI of ${bmi.toFixed(1)} indicates you're underweight. This diet plan focuses on healthy caloric surplus to gain weight.`,
+      whyItFits: `At ${profile.weight}kg and ${profile.height}cm, you need to gain weight for optimal health. ${calorieNote} Focus on calorie-dense, nutritious foods rather than junk food.`,
+      ingredients: {
+        prefer: ['Calorie-dense whole foods', 'Healthy fats (ghee, nuts, olive oil)', 'Complex carbs', 'Quality protein sources', 'Milk & dairy', 'Dry fruits'],
+        avoid: allergies ? allergies.split(',').map(a => a.trim()) : ['Empty calories from junk food', 'Excessive sugar', 'Processed foods'],
+      },
+      naturalSolution: {
+        title: 'Traditional Weight Gain Diet',
+        description: `6 meals/day approach: Breakfast: Paratha with ghee + banana shake. Mid-morning: Dry fruits (almonds, dates, cashews) + milk. Lunch: Extra roti + dal + rice + ghee + curd. Evening: Peanut butter sandwich + banana. Dinner: Full meal with extra portion. Bedtime: Warm milk with turmeric + honey. Daily target: ${targetCalories} kcal.`,
+        timeline: 'Gain 0.5-1kg per week with consistent surplus',
+        cost: '₹4000-8000/month groceries',
+      },
+      chemicalSolution: {
+        title: 'Optimized Mass Gain Nutrition',
+        description: `Protein: ${Math.round(profile.weight * 2)}g daily (eggs, chicken, whey, paneer). Carbs: ${Math.round((targetCalories * 0.5) / 4)}g (oats, rice, sweet potato, banana). Fats: ${Math.round((targetCalories * 0.3) / 9)}g (nuts, ghee, olive oil). Add: Mass gainer shake (400-600cal) post-workout. Creatine 5g daily.`,
+        timeline: '4-8 weeks for noticeable weight gain',
+        cost: '₹6000-12000/month (quality food + supplements)',
+      },
+      budgetNote: profile.budget.includes('500') ? 'Milk, bananas, peanut butter, eggs, and ghee are affordable calorie-dense options for weight gain.' : 'Invest in quality mass gainers and whey protein for easier calorie intake.',
+      timeline: `Daily Target: ${targetCalories} kcal | ${hydration}ml water | ${Math.round(profile.weight * 2)}g protein | Goal: Reach ${profile.weight + 8}kg`,
+      image: dietImages[0],
+    });
+  } else if (bmiCategory === 'overweight') {
+    recommendations.push({
+      id: 'diet-bmi-loss',
+      title: '🥗 Fat Loss Nutrition Plan',
+      description: `Your BMI of ${bmi.toFixed(1)} indicates you're overweight. This diet plan creates a healthy caloric deficit for sustainable fat loss.`,
+      whyItFits: `At ${profile.weight}kg and ${profile.height}cm, losing weight will significantly improve your health. ${calorieNote} Focus on high-protein, high-fiber foods that keep you full.`,
+      ingredients: {
+        prefer: ['High-protein foods', 'Fiber-rich vegetables', 'Complex carbs', 'Lean meats', 'Legumes', 'Low-calorie dense foods'],
+        avoid: [...(allergies ? allergies.split(',').map(a => a.trim()) : []), 'Fried foods', 'Sugary drinks', 'Processed snacks', 'Excessive oil/ghee', 'White bread/maida'],
+      },
+      naturalSolution: {
+        title: 'Traditional Fat Loss Diet',
+        description: `3 main meals + 2 light snacks: Morning: Warm water + lemon, then poha/upma (small portion). Mid-morning: Green tea + handful of makhana. Lunch: 1 roti + lots of sabzi + dal + salad (no rice or small portion). Evening: Buttermilk + cucumber. Dinner: Soup + salad OR light khichdi (before 7 PM). Daily target: ${targetCalories} kcal max.`,
+        timeline: 'Lose 0.5-1kg per week safely',
+        cost: '₹3000-5000/month groceries',
+      },
+      chemicalSolution: {
+        title: 'Macro-Optimized Fat Loss',
+        description: `High protein: ${Math.round(profile.weight * 1.8)}g (keeps muscle, burns fat). Moderate carbs: ${Math.round((targetCalories * 0.35) / 4)}g (complex only). Low fat: ${Math.round((targetCalories * 0.25) / 9)}g. Track with MyFitnessPal. Consider: Green tea extract, L-Carnitine, fiber supplements. Meal prep to control portions.`,
+        timeline: '3-6 weeks for visible results',
+        cost: '₹4000-8000/month (quality food + supplements)',
+      },
+      budgetNote: profile.budget.includes('500') ? 'Dal, eggs, seasonal vegetables, and buttermilk are affordable high-protein, low-calorie options.' : 'Invest in lean proteins and consider a food scale for accurate portion control.',
+      timeline: `Daily Target: ${targetCalories} kcal max | ${hydration}ml water | ${Math.round(profile.weight * 1.8)}g protein | Goal: Reach ${Math.round(profile.weight - (bmi - 23) * Math.pow(profile.height / 100, 2))}kg`,
+      image: dietImages[1],
+    });
+  } else {
+    recommendations.push({
+      id: 'diet-bmi-maintain',
+      title: '⚖️ Weight Maintenance Nutrition Plan',
+      description: `Your BMI of ${bmi.toFixed(1)} is healthy! This diet plan helps maintain your weight while optimizing nutrition.`,
+      whyItFits: `At ${profile.weight}kg and ${profile.height}cm, you're in the optimal range. ${calorieNote} Focus on balanced nutrition and food quality.`,
+      ingredients: {
+        prefer: ['Balanced macros', 'Whole foods', 'Variety of proteins', 'Colorful vegetables', 'Healthy fats', 'Complex carbs'],
+        avoid: allergies ? allergies.split(',').map(a => a.trim()) : ['Excessive processed foods', 'Too much sugar', 'Extreme restriction'],
+      },
+      naturalSolution: {
+        title: 'Balanced Traditional Diet',
+        description: `Eat intuitively with 3 main meals: Breakfast: Idli/Poha/Paratha with protein. Lunch: Roti + sabzi + dal + rice + curd + salad. Dinner: Light but complete meal. Snacks: Fruits, nuts, buttermilk. Enjoy occasional treats without guilt. Target: ${targetCalories} kcal/day.`,
+        timeline: 'Maintain weight while enjoying varied foods',
+        cost: '₹4000-7000/month groceries',
+      },
+      chemicalSolution: {
+        title: 'Optimized Maintenance Diet',
+        description: `Protein: ${Math.round(profile.weight * 1.6)}g. Carbs: ${Math.round((targetCalories * 0.45) / 4)}g. Fats: ${Math.round((targetCalories * 0.25) / 9)}g. Weekly meal prep. Include: Multivitamin, Omega-3, Vitamin D. Practice flexible dieting - 80% whole foods, 20% treats.`,
+        timeline: 'Sustained energy and stable weight',
+        cost: '₹5000-10000/month (quality food + supplements)',
+      },
+      budgetNote: 'Focus on food quality and variety. You have flexibility in your diet - enjoy it!',
+      timeline: `Daily Target: ${targetCalories} kcal | ${hydration}ml water | ${Math.round(profile.weight * 1.6)}g protein | Maintain ${profile.weight}kg`,
+      image: dietImages[0],
+    });
+  }
 
   // Skin-focused nutrition
   if (skinGoals.includes('acne') || skinGoals.includes('glow') || skinGoals.includes('clear')) {
