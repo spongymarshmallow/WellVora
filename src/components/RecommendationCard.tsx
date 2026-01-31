@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Leaf, FlaskConical, Clock, IndianRupee, Check, X } from 'lucide-react';
-import { Recommendation } from '@/types/user';
+import { ChevronDown, ChevronUp, Leaf, FlaskConical, Clock, IndianRupee, Check, X, MapPin } from 'lucide-react';
+import { Recommendation, LocationData } from '@/types/user';
 
 interface RecommendationCardProps {
   recommendation: Recommendation;
   category: 'skincare' | 'haircare' | 'workout' | 'diet';
   preferredSolution?: 'natural' | 'chemical' | 'mixed';
+  locationData?: LocationData | null;
 }
 
 const categoryStyles = {
@@ -31,13 +32,58 @@ const categoryStyles = {
   },
 };
 
-const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation, category, preferredSolution = 'mixed' }) => {
+const RecommendationCard: React.FC<RecommendationCardProps> = ({ 
+  recommendation, 
+  category, 
+  preferredSolution = 'mixed',
+  locationData 
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const styles = categoryStyles[category];
   
   const isNaturalPreferred = preferredSolution === 'natural';
   const isChemicalPreferred = preferredSolution === 'chemical';
+
+  // Generate location-specific advice based on climate
+  const getLocationAdvice = () => {
+    if (!locationData) return null;
+    
+    const adviceMap: Record<string, Record<string, string>> = {
+      skincare: {
+        'hot-humid': 'In humid conditions, focus on oil control and lightweight hydration. Use gel-based products and blotting papers.',
+        'dry-hot': 'Combat dehydration with hyaluronic acid and rich SPF protection. Avoid alcohol-based toners.',
+        'cold-dry': 'Prioritize barrier repair with ceramides and occlusives. Layer hydrating products.',
+        'moderate': 'Maintain balance with gentle, pH-neutral products. Adapt seasonally.',
+        'high-pollution': 'Double cleanse daily and use antioxidants like Vitamin C to combat free radicals.',
+      },
+      haircare: {
+        'hot-humid': 'Control frizz with anti-humidity serums and clarify weekly to remove buildup.',
+        'dry-hot': 'Deep condition regularly and use UV protection sprays. Minimize heat styling.',
+        'cold-dry': 'Combat static with leave-in conditioners. Use gentle, moisturizing shampoos.',
+        'moderate': 'Balance your routine based on seasonal changes. Trim regularly.',
+        'high-pollution': 'Wash more frequently and use protective leave-ins to shield from particulates.',
+      },
+      workout: {
+        'hot-humid': 'Work out during cooler hours. Stay extra hydrated and choose moisture-wicking fabrics.',
+        'dry-hot': 'Exercise early morning or evening. Increase water intake by 20-30%.',
+        'cold-dry': 'Warm up thoroughly to prevent injury. Keep skin covered to prevent moisture loss.',
+        'moderate': 'Ideal conditions for outdoor activities. Maintain consistent routine.',
+        'high-pollution': 'Consider indoor workouts on high pollution days. Use air purifiers at home.',
+      },
+      diet: {
+        'hot-humid': 'Include cooling foods like cucumber and watermelon. Increase electrolyte intake.',
+        'dry-hot': 'Focus on hydrating fruits and vegetables. Add healthy fats for moisture.',
+        'cold-dry': 'Include warming spices and soups. Up your Omega-3 intake for skin health.',
+        'moderate': 'Balanced seasonal eating. Include local, fresh produce.',
+        'high-pollution': 'Boost antioxidant-rich foods. Include turmeric and green tea.',
+      },
+    };
+    
+    return adviceMap[category]?.[locationData.climateType] || null;
+  };
+
+  const locationAdvice = getLocationAdvice();
 
   return (
     <div
@@ -79,6 +125,17 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation,
           <p className="text-sm font-medium mb-1">Why this fits you:</p>
           <p className="text-sm text-muted-foreground">{recommendation.whyItFits}</p>
         </div>
+
+        {/* Location-Aware Section */}
+        {locationAdvice && (
+          <div className="p-3 rounded-lg bg-gradient-to-r from-primary/5 to-transparent border border-primary/20 mb-4 animate-fade-in">
+            <p className="text-sm font-medium mb-1 flex items-center gap-2 text-primary">
+              <MapPin className="w-4 h-4" />
+              Why this works for your location:
+            </p>
+            <p className="text-sm text-muted-foreground">{locationAdvice}</p>
+          </div>
+        )}
 
         {/* Expand Button */}
         <button

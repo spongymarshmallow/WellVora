@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { UserProfile, ProgressEntry, DailyCalorieLog, Reminder } from '@/types/user';
+import { UserProfile, ProgressEntry, DailyCalorieLog, Reminder, LocationData } from '@/types/user';
 
 interface UserContextType {
   isLoggedIn: boolean;
@@ -7,6 +7,7 @@ interface UserContextType {
   progress: ProgressEntry[];
   calorieLogs: DailyCalorieLog[];
   reminders: Reminder[];
+  locationData: LocationData | null;
   login: (email: string) => void;
   logout: () => void;
   setUserProfile: (profile: UserProfile) => void;
@@ -15,6 +16,7 @@ interface UserContextType {
   addReminder: (reminder: Omit<Reminder, 'id'>) => void;
   toggleReminder: (id: string) => void;
   deleteReminder: (id: string) => void;
+  setLocationData: (data: LocationData) => void;
   hasCompletedProfile: boolean;
 }
 
@@ -36,6 +38,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [progress, setProgress] = useState<ProgressEntry[]>([]);
   const [calorieLogs, setCalorieLogs] = useState<DailyCalorieLog[]>([]);
   const [reminders, setReminders] = useState<Reminder[]>(defaultReminders);
+  const [locationData, setLocationDataState] = useState<LocationData | null>(null);
 
   const login = (email: string) => {
     setIsLoggedIn(true);
@@ -101,6 +104,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setReminders(prev => prev.filter(r => r.id !== id));
   };
 
+  const setLocationData = (data: LocationData) => {
+    setLocationDataState(data);
+  };
+
   const hasCompletedProfile = !!(user?.ageRange && user?.skinType && user?.hairType);
 
   return (
@@ -110,6 +117,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       progress,
       calorieLogs,
       reminders,
+      locationData,
       login,
       logout,
       setUserProfile,
@@ -118,6 +126,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       addReminder,
       toggleReminder,
       deleteReminder,
+      setLocationData,
       hasCompletedProfile,
     }}>
       {children}

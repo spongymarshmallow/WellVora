@@ -1,17 +1,20 @@
 import React, { useState, useMemo } from 'react';
 import { Sparkles, Scissors, Dumbbell, Utensils, Info, Leaf, FlaskConical, Shuffle } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
+import { ClimateInfo } from '@/utils/locationData';
 import DashboardHeader from './DashboardHeader';
 import ProfileSummary from './ProfileSummary';
 import RecommendationCard from './RecommendationCard';
 import ProgressTracker from './ProgressTracker';
 import ProfileSetup from './ProfileSetup';
+import LocationAwareSkinHairCare from './LocationAwareSkinHairCare';
 import {
   generateSkincareRecommendations,
   generateHaircareRecommendations,
   generateWorkoutRecommendations,
   generateDietRecommendations,
 } from '@/utils/recommendations';
+import { LocationData } from '@/types/user';
 
 type TabType = 'skincare' | 'haircare' | 'workout' | 'diet';
 type PageType = 'dashboard' | 'tracking' | 'profile';
@@ -31,7 +34,7 @@ const preferenceConfig = {
 };
 
 const Dashboard: React.FC = () => {
-  const { user, hasCompletedProfile, setUserProfile } = useUser();
+  const { user, hasCompletedProfile, setUserProfile, locationData, setLocationData } = useUser();
   const [activeTab, setActiveTab] = useState<TabType>('skincare');
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
 
@@ -40,6 +43,17 @@ const Dashboard: React.FC = () => {
     if (user) {
       setUserProfile({ ...user, solutionPreference: preference });
     }
+  };
+
+  // Handle location set from LocationAwareSkinHairCare component
+  const handleLocationSet = (location: string, climate: ClimateInfo) => {
+    setLocationData({
+      location,
+      climateType: climate.type,
+      temperature: climate.temperature,
+      humidity: climate.humidity,
+      pollution: climate.pollution,
+    });
   };
 
   const recommendations = useMemo(() => {
@@ -86,6 +100,24 @@ const Dashboard: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 pb-8">
         {/* Profile Summary */}
         <ProfileSummary />
+
+        {/* Location-Aware Skin & Hair Care Section */}
+        <div className="mb-8">
+          <LocationAwareSkinHairCare 
+            onLocationSet={handleLocationSet}
+            currentLocation={locationData?.location || ''}
+            currentClimate={locationData ? {
+              type: locationData.climateType,
+              label: locationData.climateType.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' & '),
+              temperature: locationData.temperature,
+              humidity: locationData.humidity,
+              pollution: locationData.pollution,
+              skinStressors: [],
+              hairStressors: [],
+              recommendations: { skincare: [], haircare: [] }
+            } : null}
+          />
+        </div>
 
         {/* Category Tabs */}
         <div className="flex flex-wrap gap-2 mb-6">
@@ -174,6 +206,7 @@ const Dashboard: React.FC = () => {
               recommendation={rec} 
               category={activeTab}
               preferredSolution={user?.solutionPreference || 'mixed'}
+              locationData={locationData}
             />
           ))}
         </div>

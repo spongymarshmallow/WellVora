@@ -1,3 +1,13 @@
+export type ClimateType = 'hot-humid' | 'dry-hot' | 'cold-dry' | 'moderate' | 'high-pollution';
+
+export interface LocationData {
+  location: string;
+  climateType: ClimateType;
+  temperature: string;
+  humidity: string;
+  pollution: 'Low' | 'Moderate' | 'High';
+}
+
 export interface UserProfile {
   email: string;
   name: string;
@@ -15,6 +25,7 @@ export interface UserProfile {
   skinGoals: string;
   hairGoals: string;
   bodyGoals: string;
+  locationData?: LocationData;
 }
 
 export interface ProgressEntry {
