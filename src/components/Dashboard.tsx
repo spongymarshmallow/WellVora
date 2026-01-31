@@ -2,12 +2,14 @@ import React, { useState, useMemo } from 'react';
 import { Sparkles, Scissors, Dumbbell, Utensils, Info, Leaf, FlaskConical, Shuffle } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 import { ClimateInfo } from '@/utils/locationData';
-import DashboardHeader from './DashboardHeader';
+import DashboardHeader, { PageType } from './DashboardHeader';
 import ProfileSummary from './ProfileSummary';
 import RecommendationCard from './RecommendationCard';
 import ProgressTracker from './ProgressTracker';
 import ProfileSetup from './ProfileSetup';
 import LocationAwareSkinHairCare from './LocationAwareSkinHairCare';
+import MentalHealthQuiz from './MentalHealthQuiz';
+import AIScreening from './AIScreening';
 import {
   generateSkincareRecommendations,
   generateHaircareRecommendations,
@@ -17,7 +19,6 @@ import {
 import { LocationData } from '@/types/user';
 
 type TabType = 'skincare' | 'haircare' | 'workout' | 'diet';
-type PageType = 'dashboard' | 'tracking' | 'profile';
 type SolutionPreference = 'natural' | 'chemical' | 'mixed';
 
 const tabConfig = {
@@ -67,14 +68,26 @@ const Dashboard: React.FC = () => {
     };
   }, [user]);
 
+  const handleNavigate = (page: PageType) => {
+    setCurrentPage(page);
+  };
+
   if (!hasCompletedProfile) {
     return <ProfileSetup onComplete={() => {}} />;
+  }
+
+  if (currentPage === 'mental-health') {
+    return <MentalHealthQuiz onBack={() => setCurrentPage('dashboard')} />;
+  }
+
+  if (currentPage === 'ai-screening') {
+    return <AIScreening onBack={() => setCurrentPage('dashboard')} />;
   }
 
   if (currentPage === 'profile') {
     return (
       <div className="min-h-screen">
-        <DashboardHeader onNavigate={setCurrentPage} currentPage={currentPage} />
+        <DashboardHeader onNavigate={handleNavigate} currentPage={currentPage} />
         <div className="max-w-7xl mx-auto px-4 pb-8">
           <ProfileSetup onComplete={() => setCurrentPage('dashboard')} />
         </div>
@@ -85,7 +98,7 @@ const Dashboard: React.FC = () => {
   if (currentPage === 'tracking') {
     return (
       <div className="min-h-screen">
-        <DashboardHeader onNavigate={setCurrentPage} currentPage={currentPage} />
+        <DashboardHeader onNavigate={handleNavigate} currentPage={currentPage} />
         <div className="max-w-7xl mx-auto px-4 pb-8">
           <ProgressTracker />
         </div>
@@ -95,7 +108,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <DashboardHeader onNavigate={setCurrentPage} currentPage={currentPage} />
+      <DashboardHeader onNavigate={handleNavigate} currentPage={currentPage} />
       
       <main className="max-w-7xl mx-auto px-4 pb-8">
         {/* Profile Summary */}
