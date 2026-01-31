@@ -5,6 +5,7 @@ import { Recommendation } from '@/types/user';
 interface RecommendationCardProps {
   recommendation: Recommendation;
   category: 'skincare' | 'haircare' | 'workout' | 'diet';
+  preferredSolution?: 'natural' | 'chemical' | 'mixed';
 }
 
 const categoryStyles = {
@@ -30,10 +31,13 @@ const categoryStyles = {
   },
 };
 
-const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation, category }) => {
+const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation, category, preferredSolution = 'mixed' }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const styles = categoryStyles[category];
+  
+  const isNaturalPreferred = preferredSolution === 'natural';
+  const isChemicalPreferred = preferredSolution === 'chemical';
 
   return (
     <div
@@ -128,11 +132,22 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation,
               </div>
             </div>
 
-            {/* Natural vs Chemical - HIGHLIGHTED */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Natural vs Chemical - HIGHLIGHTED based on preference */}
+            <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${preferredSolution !== 'mixed' ? 'relative' : ''}`}>
               {/* Natural Solution */}
-              <div className="p-4 rounded-xl border-2 border-natural/50 bg-natural/5 relative overflow-hidden">
+              <div className={`p-4 rounded-xl relative overflow-hidden transition-all duration-300 ${
+                isNaturalPreferred 
+                  ? 'border-2 border-natural bg-natural/15 shadow-lg shadow-natural/30 scale-[1.02] ring-2 ring-natural/30' 
+                  : isChemicalPreferred
+                  ? 'border border-natural/30 bg-natural/5 opacity-75'
+                  : 'border-2 border-natural/50 bg-natural/5'
+              }`}>
                 <div className="absolute top-0 right-0 w-20 h-20 bg-natural/10 rounded-full blur-2xl" />
+                {isNaturalPreferred && (
+                  <div className="absolute -top-1 -right-1 bg-natural text-background text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">
+                    RECOMMENDED
+                  </div>
+                )}
                 <div className="relative">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="natural-badge">
@@ -156,8 +171,19 @@ const RecommendationCard: React.FC<RecommendationCardProps> = ({ recommendation,
               </div>
 
               {/* Chemical Solution */}
-              <div className="p-4 rounded-xl border-2 border-chemical/50 bg-chemical/5 relative overflow-hidden">
+              <div className={`p-4 rounded-xl relative overflow-hidden transition-all duration-300 ${
+                isChemicalPreferred 
+                  ? 'border-2 border-chemical bg-chemical/15 shadow-lg shadow-chemical/30 scale-[1.02] ring-2 ring-chemical/30' 
+                  : isNaturalPreferred
+                  ? 'border border-chemical/30 bg-chemical/5 opacity-75'
+                  : 'border-2 border-chemical/50 bg-chemical/5'
+              }`}>
                 <div className="absolute top-0 right-0 w-20 h-20 bg-chemical/10 rounded-full blur-2xl" />
+                {isChemicalPreferred && (
+                  <div className="absolute -top-1 -right-1 bg-chemical text-background text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">
+                    RECOMMENDED
+                  </div>
+                )}
                 <div className="relative">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="chemical-badge">
